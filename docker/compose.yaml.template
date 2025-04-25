@@ -1,0 +1,28 @@
+services:
+  {{API_HOST}}:
+    image: ryany1819/{{API_HOST}}:latest
+    container_name: {{API_HOST}}
+    ports:
+      - "{{API_PORT}}:8000"
+    volumes:
+      - ./config.ini:/app/config.ini
+      - ./.env:/app/.env
+    environment:
+      - CONFIG_FILE=/app/config.ini
+      - ENV_FILE=/app/.env
+
+  {{DB_HOST}}:
+    image: ryany1819/{{DB_HOST}}:latest
+    container_name: {{DB_HOST}}
+    restart: always
+    ports:
+      - "{{DB_PORT}}:5432"
+    volumes:
+      - ./tsdb:/var/lib/postgresql/data # Bind mount
+    environment:
+      - POSTGRES_PASSWORD={{DB_PASSWORD}}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 3
